@@ -9,7 +9,7 @@ module ActiveFlags
   ACTIVE_FLAGS_PREFIX = 'flagged_as_'
 
   class_methods do
-    def has_flags(*authorized_flags)
+    def has_active_flags(*authorized_flags)
       has_many :flags_as_collection, class_name: 'ActiveFlags::Flag', as: :subject
 
       define_method(:flags=) do |flags|
