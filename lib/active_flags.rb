@@ -12,13 +12,13 @@ module ActiveFlags
     def has_active_flags(*authorized_flags)
       has_many :flags_as_collection, class_name: 'ActiveFlags::Flag', as: :subject
 
-      define_method(:flags=) do |flags|
+      define_method(:active_flags=) do |flags|
         Handler::FlagMapper.remap(authorized_flags, flags.symbolize_keys).each do |flag_attributes|
           Handler::FlagBuilder.new(self, flag_attributes).save
         end
       end
 
-      define_method(:flags) do
+      define_method(:active_flags) do
         hash_of_flags = {}
         flags_as_collection.each do |flag|
           hash_of_flags[flag.key.to_sym] = flag.converted_value
@@ -31,7 +31,7 @@ module ActiveFlags
       method_name.to_s.include?(ACTIVE_FLAGS_PREFIX) || super
     end
 
-    def method_missing(method_name, *args, &block) 
+    def method_missing(method_name, *args, &block)
       return super unless method_name.to_s.include?(prefix = ACTIVE_FLAGS_PREFIX)
       different_from = method_name.to_s.starts_with?('not')
       flag = method_name.to_s.gsub(different_from ? "not_#{prefix}" : prefix, '')
